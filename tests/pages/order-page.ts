@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test'
+import { SERVICE_URL } from '../../config/env-data'
 
 export class OrderPage {
   readonly page: Page
@@ -7,6 +8,7 @@ export class OrderPage {
   readonly clientPhone: Locator
   readonly createOrderButton: Locator
   readonly OkButton: Locator
+  readonly url: string = SERVICE_URL + '/orders'
 
   constructor(page: Page) {
     this.page = page
@@ -21,5 +23,9 @@ export class OrderPage {
     await this.clientName.fill(name)
     await this.clientPhone.fill(phone)
     await this.createOrderButton.click()
+  }
+
+  async open() {
+    await this.page.goto(this.url)
   }
 }

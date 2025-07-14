@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
-import { BACKEND_URL, PASSWORD, SERVICE_URL, USERNAME } from '../../../config/env-data'
-import { faker } from '@faker-js/faker/locale/ar'
+import { BACKEND_URL, PASSWORD, USERNAME } from '../../../config/env-data'
+import { OrderPage } from '../../pages/order-page'
+import { StatusPage } from '../../pages/status-page'
 
 const loginPath = 'login/student'
 let jwt: string = ''
@@ -25,9 +26,18 @@ test.beforeEach(async ({ context }) => {
 
 test('create order and check success message', async ({ context }) => {
   const page = await context.newPage()
-  await page.goto(SERVICE_URL)
-  await page.getByTestId('username-input').fill(faker.internet.username())
-  await page.getByTestId('phone-input').fill(faker.phone.number())
-  await page.getByTestId('createOrder-button').click()
-  await expect(page.getByTestId('orderSuccessfullyCreated-popup-ok-button')).toBeVisible()
+  const orderPage = new OrderPage(page)
+
+  await orderPage.open()
+  await orderPage.createOrder('name', '123456789')
+})
+
+test('search for existing orders', async ({ context }) => {
+  const page = await context.newPage()
+
+  const statusPage = new StatusPage(page, '10192')
+
+  await statusPage.open()
+
+  await expect(statusPage.orderItemFirst).toBeVisible()
 })
